@@ -2,7 +2,7 @@
 let startTime = null;
 let currentTabId = null;
 let alreadyChecked = false;
-const cache = new Map(); // NEW: Cache to avoid redundant checks
+const cache = new Map(); 
 
 function alertUser(tabId) {
   const notificationId = 'focusCheck-' + Date.now();

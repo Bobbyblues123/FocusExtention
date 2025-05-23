@@ -35,12 +35,12 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
 
     const words = getVisibleText();
 
-    fetch("http://127.0.0.1:5000/classify-text", {
+    fetch("https://focus-backend-0pm1.onrender.com/classify-text", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({ text: `${words} URL: ${url}` })
+      body: JSON.stringify({ text: {words}, url: {url} })
     })
     .then(res => res.json())
     .then(data => {

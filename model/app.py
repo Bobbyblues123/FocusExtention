@@ -39,20 +39,23 @@ def normalize_text(text: str) -> str:
         text = text.replace(old, new)
     return text
 
-def classify_with_gemini(text: str) -> str:
+def classify_with_gemini(text: str, url: str) -> str:
     prompt = (
-        f"Text: {text}\n\n"
-        "Is this content likely to be distracting for someone trying to stay focused on work or study? "
-        "Answer 'Distracting' or 'Non-distracting'."
+        "You are a focus assistant helping someone stay productive. "
+        "Determine if a website snippet and its URL are likely to distract someone from work or study.\n\n"
+        f"Text: {text}\n"
+        f"URL: {url}\n\n"
+        "Reply ONLY with 'Distracting' or 'Non-distracting'."
     )
+    print(f"[Gemini] Prompt sent to Gemini model:\n{prompt}")
 
     response = gemini_model.generate_content(prompt)
     gemini_output = response.text.strip()
 
-    if gemini_output.lower().startswith("distracting"):
-        return "Distracting"
-    elif gemini_output.lower().startswith("non-distracting"):
+    if "non-distracting" in gemini_output:
         return "Non-distracting"
+    elif "distracting" in gemini_output:
+        return "Distracting"
     else:
         return "Distracting"  # fallback
 
@@ -87,11 +90,12 @@ def home():
 def classify_text():
     data = request.get_json(force=True)
     text = data.get('text', '').strip()
+    url = data.get('url', '').strip()
 
-    print(f"[Request] Received text for classification: {text}")  # ✅ Debug: print input
+    print(f"[Request] Text: {text[:100]}... | URL: {url}")  # for debug
 
-    if not text:
-        return jsonify({'error': 'No text provided'}), 400
+    if not text or not url:
+        return jsonify({'error': 'No text/url provided'}), 400
 
     text = normalize_text(text)
 
