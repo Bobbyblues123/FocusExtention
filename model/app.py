@@ -18,7 +18,8 @@ app = Flask(__name__)
 CORS(app)
 
 # Load your model and vectorizer
-model = joblib.load('focus_model.pkl')
+model_path = os.path.join(os.path.dirname(__file__), 'focus_model.pkl')
+model = joblib.load(model_path)
 vectorizer = joblib.load('vectorizer.pkl')
 
 # Configure Gemini API
