@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Focus Tracker</title>
+    <style>
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        width: 250px;
+        padding: 15px;
+        background-color: #f9f9f9;
+        color: #333;
+        border-radius: 10px;
+      }
+
+      h2 {
+        margin-top: 0;
+        font-size: 20px;
+        color: #2c3e50;
+        text-align: center;
+      }
+
+      p {
+        margin: 8px 0;
+      }
+
+      #site {
+        font-weight: bold;
+        color: #2980b9;
+      }
+
+      #focusTime {
+        margin-top: 10px;
+        font-weight: bold;
+        color: #27ae60;
+        text-align: center;
+      }
+
+      #closeBtn {
+        margin-top: 15px;
+        width: 100%;
+        padding: 8px 0;
+        font-size: 15px;
+        font-weight: bold;
+        background-color: #e74c3c;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+        display: none;
+      }
+
+      #closeBtn:hover {
+        background-color: #c0392b;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>Focus Tracker</h2>
+    <p>Current Tab: <span id="site">Loading...</span></p>
+    <p id="focusTime">Loading focus time...</p>
+    <button id="closeBtn">❌ Close This Tab?</button>
+    <script src="popup.js"></script>
+  </body>
+</html>

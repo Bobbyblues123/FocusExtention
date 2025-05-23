@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: focus-tracker-api
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app
+    envVars:
+      - key: GEMINI_API_KEY
+        value: AIzaSyAVxpchnJRs6c75QBTgPA_Wj3Zx5GmXbpI
