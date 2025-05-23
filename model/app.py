@@ -20,7 +20,8 @@ CORS(app)
 # Load your model and vectorizer
 model_path = os.path.join(os.path.dirname(__file__), 'focus_model.pkl')
 model = joblib.load(model_path)
-vectorizer = joblib.load('vectorizer.pkl')
+vectorizer_path = os.path.join(os.path.dirname(__file__), 'vectorizer.pkl')
+vectorizer = joblib.load(vectorizer_path)
 
 # Configure Gemini API
 genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
