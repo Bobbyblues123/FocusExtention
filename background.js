@@ -40,7 +40,6 @@ function checkTab() {
     const elapsedTime = now - startTime;
 
     if (elapsedTime >= 300000 && !checkedTabs.get(tab.id)) {
-      // Check cache first
       if (cache.has(tab.url)) {
         const category = cache.get(tab.url);
         if (category === "Distracting") {
@@ -50,7 +49,6 @@ function checkTab() {
         return;
       }
 
-      // Ask content script to analyze
       chrome.tabs.sendMessage(tab.id, { action: "analyzeContent" }, (response) => {
         if (chrome.runtime.lastError) {
           console.warn("Message send failed:", chrome.runtime.lastError.message);
