@@ -5,7 +5,7 @@
 ## Features
 
 - Detects when you're on a distracting website
-- Uses AI (via a local Flask server) to analyze visible webpage text
+- Uses AI via Flask to analyze visible webpage text
 - Tracks how long you've been on a distracting site
 - Sends a notification with an option to close the tab
 - Displays current site status in the popup
@@ -13,9 +13,9 @@
 ## Files Overview
 
 - `manifest.json` — Chrome extension config
-- `content.js` — Extracts visible text and communicates with the classifier
-- `popup.js` — Displays site status and allows user interaction
-- `background.js` — Tracks tab focus time and sends notifications
+- `content.js` — Extracts visible text and communicates with the text classifier
+- `popup.js` — Displays site status and link and allows user interaction for tab close
+- `background.js` — Tracks tab distraction time and sends notifications if over 5 mins
 - `icon*.png` — Extension icons
 - `app.py` - Flask app
 
@@ -26,13 +26,26 @@
 1. Go to `chrome://extensions/`
 2. Enable **Developer mode** 
 3. Click **Load unpacked**
-4. Select the folder containing this project
+4. Select the folder containing focus tracker
 
 ### 2. Start Your Local AI Server
 
 Load Server using render or other servers
 
-#### License
+## Focus Tracker in use
+
+### Distracting Sites
+<img src="assets/distracting1.png" width="250"/>
+<img src="assets/distracting2.png" width="250"/>
+
+### Tab close feature
+<img src="assets/Distracting3.png" width="250"/>
+
+### Non Distracting Sites
+<img src="assets/Nondistracting1.png" width="250"/>
+<img src="assets/Nondistracting2.png" width="250"/>
+
+##### License
 
 MIT
 
