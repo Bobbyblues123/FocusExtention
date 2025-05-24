@@ -1,8 +1,7 @@
-//background.js
 let startTime = null;
 let currentTabId = null;
-let alreadyChecked = false;
-const cache = new Map(); 
+const checkedTabs = new Map();  
+const cache = new Map();        
 
 function alertUser(tabId) {
   const notificationId = 'focusCheck-' + Date.now();
@@ -35,19 +34,19 @@ function checkTab() {
     if (currentTabId !== tab.id) {
       currentTabId = tab.id;
       startTime = now;
-      alreadyChecked = false;
+      checkedTabs.set(tab.id, false);
     }
 
     const elapsedTime = now - startTime;
 
-    if (elapsedTime >= 5000 && !alreadyChecked) {
+    if (elapsedTime >= 5000 && !checkedTabs.get(tab.id)) {
       // Check cache first
       if (cache.has(tab.url)) {
-        const cachedResult = cache.get(tab.url);
-        if (cachedResult) {
-          chrome.runtime.sendMessage({ action: "notify" });
+        const category = cache.get(tab.url);
+        if (category === "Distracting") {
+          chrome.runtime.sendMessage({ action: "notify", category });
         }
-        alreadyChecked = true;
+        checkedTabs.set(tab.id, true);
         return;
       }
 
@@ -59,7 +58,8 @@ function checkTab() {
           console.log("Message sent successfully");
         }
       });
-      alreadyChecked = true;
+
+      checkedTabs.set(tab.id, true);
     }
   });
 }
@@ -70,7 +70,8 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   if (msg.action === "notify") {
     if (currentTabId) alertUser(currentTabId);
     if (sender.tab && sender.tab.url) {
-      cache.set(sender.tab.url, true); // Cache the result
+      const category = msg.category || "Distracting";
+      cache.set(sender.tab.url, category);
     }
   }
 
@@ -80,4 +81,12 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     sendResponse({ timeMs: elapsed });
     return true;
   }
+});
+
+// Optional: Clear state on startup
+chrome.runtime.onStartup.addListener(() => {
+  currentTabId = null;
+  startTime = null;
+  checkedTabs.clear();
+  cache.clear();
 });

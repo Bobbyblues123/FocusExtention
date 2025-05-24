@@ -1,26 +1,15 @@
 //popup.js
-async function isDistractingSite(url) {
-  try {
-    const res = await fetch("https://focus-backend-0pm1.onrender.com/classify-text", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ text: url })
+async function isDistractingSite(tab) {
+  return new Promise((resolve) => {
+    chrome.tabs.sendMessage(tab.id, { action: "analyzeContent" }, (response) => {
+      if (chrome.runtime.lastError) {
+        console.error("Content script error:", chrome.runtime.lastError.message);
+        return resolve(false);
+      }
+      const category = response?.category || null;
+      resolve(category === "Distracting");
     });
-
-    if (!res.ok) {
-      const errorText = await res.text();
-      throw new Error(`Server responded with ${res.status}: ${errorText}`);
-    }
-
-    const data = await res.json();
-
-    return data.category === "Distracting";
-  } catch (err) {
-    console.error("Popup classification failed:", err);
-    return false;  // Fallback: treat as not distracting
-  }
+  });
 }
 
 function updatePopup() {
@@ -35,7 +24,7 @@ function updatePopup() {
         const status = document.getElementById("focusTime");
         const closeBtn = document.getElementById("closeBtn");
 
-        const isDistracting = await isDistractingSite(tab.url);
+        const isDistracting = await isDistractingSite(tab);
 
         if (isDistracting && timeSec >= 5) {
           status.textContent = `⚠️ On a distracting site for ${timeSec}s - Stay focused!`;
@@ -57,7 +46,7 @@ function updatePopup() {
       });
     } else {
       document.getElementById("site").textContent = "Loading...";
-      document.getElementById("status").textContent = "❌ Couldn't load focus time.";
+      document.getElementById("focusTime").textContent = "❌ Couldn't load focus time.";
     }
   });
 }
@@ -66,4 +55,3 @@ document.addEventListener('DOMContentLoaded', () => {
   updatePopup();
   setInterval(updatePopup, 1000);
 });
-

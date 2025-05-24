@@ -10,20 +10,16 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 import google.generativeai as genai
 
-# Ensure UTF-8 encoding for stdout
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
 
-# Initialize Flask app
 app = Flask(__name__)
 CORS(app)
 
-# Load your model and vectorizer
 model_path = os.path.join(os.path.dirname(__file__), 'focus_model.pkl')
 model = joblib.load(model_path)
 vectorizer_path = os.path.join(os.path.dirname(__file__), 'vectorizer.pkl')
 vectorizer = joblib.load(vectorizer_path)
 
-# Configure Gemini API
 genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
 gemini_model = genai.GenerativeModel('gemini-1.5-flash')
 
@@ -42,7 +38,7 @@ def normalize_text(text: str) -> str:
 def classify_with_gemini(text: str, url: str) -> str:
     prompt = (
         "You are a focus assistant helping someone stay productive. "
-        "Determine if a website snippet and its URL are likely to distract someone from work or study.\n\n"
+        "Determine if a website snippet and its URL are likely to distract someone from work or study where distracting means social media or video watching, video games, etc..\n\n"
         f"Text: {text}\n"
         f"URL: {url}\n\n"
         "Reply ONLY with 'Distracting' or 'Non-distracting'."
@@ -51,22 +47,16 @@ def classify_with_gemini(text: str, url: str) -> str:
 
     response = gemini_model.generate_content(prompt)
     gemini_output = response.text.strip()
+    return gemini_output if gemini_output in ["Distracting", "Non-distracting"] else "Distracting"
 
-    if "non-distracting" in gemini_output:
-        return "Non-distracting"
-    elif "distracting" in gemini_output:
-        return "Distracting"
-    else:
-        return "Distracting"  # fallback
-
-def hybrid_classify(text: str) -> dict:
+def hybrid_classify(text: str, url: str) -> dict:
     X = vectorizer.transform([text])
     prob = model.predict_proba(X)[0]
     class_index = np.argmax(prob)
     confidence = prob[class_index]
 
     if confidence < 1.0:
-        gemini_result = classify_with_gemini(text)
+        gemini_result = classify_with_gemini(text, url)
         print(f"Model not confident (confidence={confidence:.4f}). Using Gemini fallback. Gemini result: {gemini_result}")
         return {
             'category': gemini_result,
@@ -89,10 +79,11 @@ def home():
 @app.route('/classify-text', methods=['POST'])
 def classify_text():
     data = request.get_json(force=True)
+    print("recieved json", data)
     text = data.get('text', '').strip()
     url = data.get('url', '').strip()
 
-    print(f"[Request] Text: {text[:100]}... | URL: {url}")  # for debug
+    print(f"[Request] Text: {text[:100]}... | URL: {url}")  
 
     if not text or not url:
         return jsonify({'error': 'No text/url provided'}), 400
@@ -100,39 +91,23 @@ def classify_text():
     text = normalize_text(text)
 
     try:
-        result = hybrid_classify(text)
-        print(f"[Response] Classification result: {result}\n")  # ✅ Debug: print output
+        result = hybrid_classify(text, url)
+        print(f"[Response] Classification result: {result}\n") 
         return app.response_class(
             response=json.dumps(result, ensure_ascii=False).encode('utf-8'),
             status=200,
             mimetype='application/json; charset=utf-8'
         )
     except Exception as e:
-        print(f"[Error] Exception during classification: {e}")  # ✅ Debug: print error
+        print(f"[Error] Exception during classification: {e}")  
         return jsonify({'error': str(e)}), 500
-
-# --- TESTERS ---
-def test_texts():
-    test_cases = [
-        ("Distracting #1", "I can't focus because of the loud music and constant notifications."),
-        ("Distracting #2", "OMG, did you see that viral video? Check this out!"),
-        ("Distracting #3", "My phone keeps buzzing every minute with texts and alerts."),
-        ("Non-distracting #1", "The lecture was very informative and kept me engaged the entire time."),
-        ("Non-distracting #2", "I organized my notes and planned my study session carefully.")
-    ]
-
-    for label, text in test_cases:
-        print(f"--- {label} ---")
-        result = hybrid_classify(text)
-        print(f"Text: {text}")
-        print(f"Classification: {result['category']} (Confidence: {result['confidence']}, Source: {result['source']})\n")
-
+    
 if __name__ == '__main__':
     import threading
     import time
 
     def run_tests():
-        time.sleep(1)  # wait for server start
+        time.sleep(1)  
         # test_texts()
 
     threading.Thread(target=run_tests).start()
