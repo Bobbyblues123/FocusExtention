@@ -102,14 +102,14 @@ def classify_text():
         print(f"[Error] Exception during classification: {e}")  
         return jsonify({'error': str(e)}), 500
     
-if __name__ == '__main__':
-    import threading
-    import time
+# if __name__ == '__main__':
+#     import threading
+#     import time
 
-    def run_tests():
-        time.sleep(1)  
-        # test_texts()
+#     def run_tests():
+#         time.sleep(1)  
+#         # test_texts()
 
-    threading.Thread(target=run_tests).start()
-    port = int(os.environ["PORT"])
-    app.run(host='0.0.0.0', port=port)
+#     threading.Thread(target=run_tests).start()
+#     port = int(os.environ.get("PORT", 10000))
+#     app.run(host='0.0.0.0', port=port)
