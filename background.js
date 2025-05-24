@@ -39,7 +39,7 @@ function checkTab() {
 
     const elapsedTime = now - startTime;
 
-    if (elapsedTime >= 5000 && !checkedTabs.get(tab.id)) {
+    if (elapsedTime >= 300000 && !checkedTabs.get(tab.id)) {
       // Check cache first
       if (cache.has(tab.url)) {
         const category = cache.get(tab.url);
@@ -83,7 +83,6 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   }
 });
 
-// Optional: Clear state on startup
 chrome.runtime.onStartup.addListener(() => {
   currentTabId = null;
   startTime = null;

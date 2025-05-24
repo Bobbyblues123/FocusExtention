@@ -26,7 +26,7 @@ function updatePopup() {
 
         const isDistracting = await isDistractingSite(tab);
 
-        if (isDistracting && timeSec >= 5) {
+        if (isDistracting && timeSec >= 300) {
           status.textContent = `⚠️ On a distracting site for ${timeSec}s - Stay focused!`;
           closeBtn.style.display = "inline-block";
 
