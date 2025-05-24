@@ -35,8 +35,8 @@ Load Server using render or other servers
 ## Focus Tracker in use
 
 ### Distracting Sites
-<img src="assets/distracting1.png" width="250"/>
-<img src="assets/distracting2.png" width="250"/>
+<img src="assets/Distracting1.png" width="250"/>
+<img src="assets/Distracting2.png" width="250"/>
 
 ### Tab close feature
 <img src="assets/Distracting3.png" width="250"/>
