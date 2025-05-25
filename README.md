@@ -30,7 +30,7 @@
 
 ### 2. Start Your Local AI Server
 
-Load Server using render or other servers
+Load Server using render or other servers and change the fetch call in content.js to the link which you are using in the for the server. To use, go to a website with the chrome extention added and then click on the extention to see the status of the website and if it is distracting, wait 5 minutes for a close tab option. 
 
 ## Focus Tracker in use
 
