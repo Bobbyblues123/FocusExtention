@@ -4,6 +4,4 @@ services:
     env: python
     buildCommand: pip install -r requirements.txt
     startCommand: gunicorn model.app:app
-    envVars:
-      - key: GOOGLE_API_KEY
-        value: AIzaSyAVxpchnJRs6c75QBTgPA_Wj3Zx5GmXbpI
+
